@@ -19,6 +19,24 @@ class Log():
         for _, _, _, m in self.detail:
             t += m
         return t
+
+    def last_logged(self, n=5):
+        try:
+            with open(os.path.join(os.path.dirname(__file__), 'log.csv'), "r") as file:
+                csv_reader = csv.reader(file)
+                lines = [line for r, line in enumerate(csv_reader) if r > 0]
+                lines = lines[-n:]
+                if len(lines) > 0:
+                    print("\nLAST LOGGED ACTIVITY\n")
+                    print("-" * 53)
+                    print(f"| {'Logged':<20} | {'Category':<15} | {'Minutes':>8} |")
+                    print("-" * 53)
+                    print(f"| {'...':<20} | {'...':<15} | {'...':>8} |")
+                    for line in lines:
+                        print(f"| {line[0][:19]:<20} | {line[2]:<15} | {line[3]:>8} |")
+                    print("-" * 53)
+        except:
+            print("Unable to read lines from file")
     
     def save(self):
         if not os.path.isfile(os.path.join(os.path.dirname(__file__), 'log.csv')):
@@ -56,7 +74,8 @@ if __name__ == "__main__":
         "Invoicing"
     ]
 
-    print("\nIT AND SYSTEMS SUPPORT LOGGER")
+    logger.last_logged()
+
     log = input("\nActivity to be logged? (y/n): ")
     if log.lower() != "y":
         exit()
@@ -72,7 +91,7 @@ if __name__ == "__main__":
 
     print("\nTIME SPENT (minutes)\n")
     for i, cat in enumerate(selected):
-        mins = input(f"{cat[0]}: {categories[cat[0]]:<15}: ")
+        mins = input(f"{cat[0]+1}: {categories[cat[0]]:<15}: ")
         selected[i].append(int(mins))
         logger.add_detail(*selected[i])
 
